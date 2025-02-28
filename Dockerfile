@@ -33,4 +33,4 @@ FROM builder as production
 ENV NODE_ENV=production
 
 # Run the production command
-CMD ["npm", "start"]
+CMD npm start

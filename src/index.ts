@@ -37,7 +37,6 @@ const options = {
 	apis: ['./src/routes/*.ts'],
 };
 const swaggerSpec = swaggerJsdoc(options);
-console.log(swaggerSpec)
 
 // routers injection
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -46,14 +45,14 @@ app.use('/device', deviceRouter);
 // root endpoint
 app.get('/', (req, res) => {
 	res.status(200).send('Welcome to TELCOM backend');
-})
+});
 
 // standard response for any request
 app.use((req, res) => {
 	res.status(404);
-})
+});
 
-// Inicia o sevidor
+// start the server
 app.listen(PORT, () => {
 	console.log(`Server running at: ${HOSTNAME}:${PORT}`);
-})
+});

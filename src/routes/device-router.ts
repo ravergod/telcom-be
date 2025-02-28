@@ -59,8 +59,15 @@ deviceRouter.post('/create', async (req, res) => {
 	const device: Device = req.body;
 	try {
 		const response = await deviceService.create(device);
+		// If I had more time, one of the things I would do is to normalize the response
+		// already checking for HTTP Status Codes and to already have those
+		// behaviors configured, instead of repeating all over the place.
+		// This would take more time
 		res.status(201).json(response);
 	} catch (e) {
+		// the same thing for the error responses and HTTP Status Codes of failing requests
+		// I put that as 500 always but at least I'm trying to provide a little
+		// more info so whoever is calling would at least know what is going on
 		res.status(500).json({
 			message: 'Something went wrong',
 			error: (e instanceof Error) ? e.message : 'Uknown error'
@@ -112,10 +119,8 @@ deviceRouter.put('/edit', async (req, res) => {
 	
 	try {
 		const response = await deviceService.edit(device);
-		if (response?.message == 'NotFound') {
-			res.status(404).json({
-				message: `The device was not found for id ${device.id}`
-			});
+		if (response?.message) {
+			res.status(404).json(response);
 			return;
 		}
 		res.status(201).json(response);
@@ -166,7 +171,11 @@ deviceRouter.get('/get-by-id/:id', async (req, res) => {
 	const id: number = +req.params.id;
 
 	try {
+		// this validation should be a function, it repeats itself
+		// I am fully aware of that, but because of time constraints I did not do it
+		// but this is strongly a point of improvement
 		if (isNaN(id)) throw new Error('The id provided is in an invalid format');
+
 		const response = await deviceService.getById(id);
 		if (!response) res.status(404).json({
 			message: `The device for id: ${id} was not found`
@@ -266,6 +275,13 @@ deviceRouter.get('/get-by-brand/:brand', async (req, res) => {
  */
 deviceRouter.get('/get-by-state/:state', async (req, res) => {
 	const deviceState: string = req.params.state;
+	
+	// the reason I've put this validation here is because if
+	// the state does not exist I don't even wanna let the server try
+	// the request. It would cost a whole bunch of processing and also it would
+	// hit the DB and then AFTER that it would tell you that it doesn't exist
+	// so I think that doing this and not letting it call another other function
+	// is better than letting the server use CPU for nothing
 	if (!DEVICE_STATES.includes(deviceState)) {
 		res.status(400).json({
 			message: 'The provided device state does not exist'
@@ -324,5 +340,26 @@ deviceRouter.get('/get-all', async (req, res) => {
 		});
 	}
 })
+
+/**
+ * @openapi
+ * /delete/{id}
+ *   delete:
+ */
+deviceRouter.delete('/delete/:id', async (req, res) => {
+	const id: number = +req.params.id;
+
+	try {
+		// should be a function as said previously
+		if (isNaN(id)) throw new Error('The id provided is in an invalid format');
+		const response = await deviceService.deleteById(id);
+		res.status(200).json(response);
+	} catch (e) {
+		res.status(500).json({
+			message: 'Something went wrong',
+			error: (e instanceof Error) ? e.message : 'Uknown error'
+		});
+	}
+});
 
 export default deviceRouter;

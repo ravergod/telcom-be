@@ -6,7 +6,7 @@
     "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node ./src/index.ts\"",
     "build": "tsc",
     "start": "node ./dist/src/index.js",
-    "main": "./src/index.ts"
+    "migrate": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run"
   },
   "keywords": [],
   "author": "",
