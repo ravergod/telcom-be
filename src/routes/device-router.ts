@@ -1,7 +1,7 @@
 import express from 'express';
 import deviceService from '../services/device-service';
 import Device from '../models/device';
-import DeviceState from '../models/enums/device-state';
+
 
 const deviceRouter = express.Router();
 
@@ -24,12 +24,42 @@ const deviceRouter = express.Router();
  *                 type: string
  *               brand:
  *                 type: string
+ *     responses:
+ *       201:
+ *         description: the created device information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 brand:
+ *                   type: string
+ *       500:
+ *         description: server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
  */
 deviceRouter.post('/create', async (req, res) => {
 	const device: Device = req.body;
-	const response = await deviceService.create(device);
+	try {
+		const response = await deviceService.create(device);
 
-	res.status(201).json(response);
+		res.status(201).json(response);
+	} catch (e) {
+		res.status(500).json({
+			message: 'Something went wrong',
+			error: (e instanceof Error) ? e.message : 'Uknown error'
+		});
+	}
 })
 
 
@@ -49,9 +79,16 @@ deviceRouter.post('/create', async (req, res) => {
  */
 deviceRouter.get('/get-by-id/:id', async (req, res) => {
 	const id: number = +req.params.id;
-	const response = await deviceService.getById(id);
 
-	res.status(200).json(response);
+	try {
+		const response = await deviceService.getById(id);
+		res.status(200).json(response);
+	} catch (e) {
+		res.status(500).json({
+			message: 'Something went wrong',
+			error: (e instanceof Error) ? e.message : 'Uknown error'
+		});
+	}
 })
 
 
@@ -60,9 +97,17 @@ deviceRouter.get('/get-by-id/:id', async (req, res) => {
  */
 deviceRouter.get('/get-by-brand/:brand', async (req, res) => {
 	const brand: string = req.params.brand;
-	const response = await deviceService.getByBrand(brand);
+
+	try {
+		const response = await deviceService.getByBrand(brand);
+		res.status(200).json(response);
+	} catch (e) {
+		res.status(500).json({
+			message: 'Something went wrong',
+			error: (e instanceof Error) ? e.message : 'Uknown error'
+		});
+	}
 	
-	res.status(200).json(response);
 })
 
 /**
@@ -70,9 +115,17 @@ deviceRouter.get('/get-by-brand/:brand', async (req, res) => {
  */
 deviceRouter.get('/get-by-state/:state', async (req, res) => {
 	const deviceState = req.params.state;
-	const response = await deviceService.getByState(deviceState);
 
-	res.status(200).json(response);
+	
+	try {
+		const response = await deviceService.getByState(deviceState);
+		res.status(200).json(response);
+	} catch (e) {
+		res.status(500).json({
+			message: 'Something went wrong',
+			error: (e instanceof Error) ? e.message : 'Uknown error'
+		});
+	}
 })
 
 /**
@@ -83,9 +136,17 @@ deviceRouter.get('/get-by-state/:state', async (req, res) => {
  *     description: Retrieve all devices registered in the database
  */
 deviceRouter.get('/get-all', async (req, res) => {
-	const response = await deviceService.getAll();
 
-	res.status(200).json(response);
+	
+	try {
+		const response = await deviceService.getAll();
+		res.status(200).json(response);
+	} catch (e) {
+		res.status(500).json({
+			message: 'Something went wrong',
+			error: (e instanceof Error) ? e.message : 'Uknown error'
+		});
+	}
 })
 
 export default deviceRouter;

@@ -4,7 +4,7 @@ type Device = {
 	id?: number,
 	name: string,
 	brand: string,
-	state?: DeviceState,
+	state?: string,
 	creationTime?: Date
 }
 

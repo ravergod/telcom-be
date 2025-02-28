@@ -2,9 +2,9 @@
  * Device service class
  */
 
-import db from "../common/lib/database";
+import DEVICE_STATES from "../common/types/device-states";
+import db from "../lib/database";
 import Device from "../models/device";
-import DeviceState from "../models/enums/device-state";
 
 
 class DeviceService {
@@ -13,11 +13,26 @@ class DeviceService {
 
 	/**
 	 * creates the device
-	 * @param newDevice 
+	 * @param {Device} newDevice 
 	 * @returns 
 	 * @async
 	 */
 	async create(newDevice: Device) {
+		if (!newDevice.brand || !newDevice.name) {
+			throw new Error('Missing brand or name from the request');
+		}
+
+		// default state if not provided is available
+		let deviceState: string = 'available';
+
+		if (newDevice.state && typeof newDevice.state == 'string') {
+			if (DEVICE_STATES.includes(newDevice.state)) {
+				deviceState = newDevice.state;
+			} else {
+				throw new Error('The device state was not found');
+			}
+		}
+
 		const [result] = await db.raw(
 			`INSERT INTO 
 				devices 
@@ -27,7 +42,7 @@ class DeviceService {
 				device_status_id = (
 					SELECT id FROM device_status WHERE status_label = ?
 				)`,
-			[newDevice.name, newDevice.brand, "available"]
+			[newDevice.name, newDevice.brand, deviceState]
 		);
 		return result;
 	}

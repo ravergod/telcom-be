@@ -45,7 +45,7 @@ app.use('/device', deviceRouter);
 
 // root endpoint
 app.get('/', (req, res) => {
-	res.status(200).send('Bem-vindo!');
+	res.status(200).send('Welcome to TELCOM backend');
 })
 
 // standard response for any request
@@ -55,5 +55,5 @@ app.use((req, res) => {
 
 // Inicia o sevidor
 app.listen(PORT, () => {
-	console.log(`Servidor rodando com sucesso ${HOSTNAME}:${PORT}`);
+	console.log(`Server running at: ${HOSTNAME}:${PORT}`);
 })
