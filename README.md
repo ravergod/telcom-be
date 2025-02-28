@@ -28,6 +28,11 @@ npm install
 ```
 This will get you all the packages necessary to run the application.
 
+2. **Environment variables:**
+
+Create a ```.env``` file to provide the necessary environment variables to execute the next steps.
+Fill them with your information.
+
 2. **Run your DB**:
 
 This could be done using the docker-compose from the root folder, or using the one inside of ./containers/mysql (would be a single container running)
