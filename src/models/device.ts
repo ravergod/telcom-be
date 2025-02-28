@@ -1,5 +1,3 @@
-import DeviceState from "./enums/device-state";
-
 type Device = {
 	id?: number,
 	name: string,

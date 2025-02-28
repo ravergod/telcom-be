@@ -33,10 +33,15 @@ const deviceRouter = express.Router();
  *             schema:
  *               type: object
  *               properties:
+ *                 id:
+ *                   type: number
  *                 name:
  *                   type: string
  *                 brand:
  *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   example: 01/01/2025
  *       500:
  *         description: server error
  *         content:
@@ -48,6 +53,7 @@ const deviceRouter = express.Router();
  *                   type: string
  *                 error:
  *                   type: string
+ * 
  */
 deviceRouter.post('/create', async (req, res) => {
 	const device: Device = req.body;
@@ -64,8 +70,41 @@ deviceRouter.post('/create', async (req, res) => {
 
 
 /**
- * 
- * 
+ * @openapi
+ * /edit:
+ *   put:
+ *     summary: Edits the device record
+ *     description: Edits the device record partially in the database, createdAt and id are not editable
+ *     produces:
+ *       - application/json
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               brand:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: the created device information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 name:
+ *                   type: string
+ *                 brand:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   example: 01/01/2025
  * 
  */
 deviceRouter.put('/edit', async (req, res) => {
@@ -94,7 +133,7 @@ deviceRouter.put('/edit', async (req, res) => {
  * /get-by-id/{id}:
  *   get:
  *     summary: Retrieve a device by id
- *     description: Retrieve a device by it's id on the system
+ *     description: Retrieve a device by id
  *     parameters:
  *       - in: path
  *         name: id
@@ -102,6 +141,26 @@ deviceRouter.put('/edit', async (req, res) => {
  *         description: device's identification number
  *         schema:
  *           type: integer
+ *     responses:
+ *       200:
+ *         description: a device object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 name:
+ *                   type: string
+ *                 brand:
+ *                   type: string
+ *                 state:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   example: 01/01/2025
+ * 
  */
 deviceRouter.get('/get-by-id/:id', async (req, res) => {
 	const id: number = +req.params.id;
@@ -123,7 +182,38 @@ deviceRouter.get('/get-by-id/:id', async (req, res) => {
 
 
 /**
- * Route responsible for retrieving devices by it's brand
+ * @openapi
+ * /get-by-brand/{brand}:
+ *   get:
+ *     summary: Retrieve a device by brand
+ *     description: Retrieve a device by it's brand
+ *     parameters:
+ *       - in: path
+ *         name: brand
+ *         required: true
+ *         description: device's brand
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: a device object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 name:
+ *                   type: string
+ *                 brand:
+ *                   type: string
+ *                 state:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   example: 01/01/2025
+ * 
  */
 deviceRouter.get('/get-by-brand/:brand', async (req, res) => {
 	const brand: string = req.params.brand;
@@ -142,9 +232,37 @@ deviceRouter.get('/get-by-brand/:brand', async (req, res) => {
 
 /**
  * @openapi
- *   /get:
- *     
- * Route responsible for retrieving devices by it's state
+ * /get-by-state/{state}:
+ *   get:
+ *     summary: Retrieve a device by state
+ *     description: Retrieve a device by it's state
+ *     parameters:
+ *       - in: path
+ *         name: state
+ *         required: true
+ *         description: device's state
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: a device object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 name:
+ *                   type: string
+ *                 brand:
+ *                   type: string
+ *                 state:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   example: 01/01/2025
+ * 
  */
 deviceRouter.get('/get-by-state/:state', async (req, res) => {
 	const deviceState: string = req.params.state;
@@ -174,20 +292,26 @@ deviceRouter.get('/get-by-state/:state', async (req, res) => {
  *     description: Retrieve all devices registered in the database
  *     responses:
  *       200:
- *         description: retrieve all the devices in the db
+ *         description: an array of devices or empty array if nothing is found
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                 name:
- *                   type: string
- *                 brand:
- *                   type: string
- *                 state:
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   name:
+ *                     type: string
+ *                   brand:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     example: 01/01/2025
+ * 
  */
 deviceRouter.get('/get-all', async (req, res) => {
 	try {
