@@ -15,7 +15,7 @@ const app = express();
 
 // enable cors
 app.use(cors({
-	origin: ['http://localhost:3000']
+	origin: ['http://localhost:4000']
 }))
 
 // enable json
@@ -32,7 +32,7 @@ const options = {
 		description: `API created to manage devices and it's information`,
 		},
 		schemes: ["http"],
-		servers: [{ url: "http://localhost:3000/" }],
+		servers: [{ url: "http://localhost:4000/" }],
 	},
 	apis: ['./src/routes/*.ts'],
 };

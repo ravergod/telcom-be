@@ -18,6 +18,7 @@ class DeviceService {
 	 * @async
 	 */
 	async create(newDevice: Device) {
+		// check if required parameters were supplied
 		if (!newDevice.brand || !newDevice.name) {
 			throw new Error('Missing brand or name from the request');
 		}
@@ -25,6 +26,7 @@ class DeviceService {
 		// default state if not provided is available
 		let deviceState: string = 'available';
 
+		// if newDevice.state exists, check for it's value
 		if (newDevice.state && typeof newDevice.state == 'string') {
 			if (DEVICE_STATES.includes(newDevice.state)) {
 				deviceState = newDevice.state;
@@ -44,7 +46,92 @@ class DeviceService {
 				)`,
 			[newDevice.name, newDevice.brand, deviceState]
 		);
-		return result;
+
+		if (result.affectedRows == 0) throw new Error('No rows were affected');
+
+		const [[createdDevice]] = await db.raw(
+			`SELECT * FROM
+				devices
+			WHERE id = ?`,
+			[result.insertId]
+		);
+
+		return createdDevice;
+	}
+
+	/**
+	 * edit the device in the database
+	 * @param {Device} device
+	 * @returns {Device} edited device
+	 * @async
+	 */
+	async edit(device: Device) {
+		if (!device.id) throw new Error('The device id was not supplied');
+
+		// check if the device exists
+		const [[deviceName]] = await db.raw(
+			`SELECT name FROM
+				devices
+			WHERE id = ?`,
+			[device.id]
+		);
+
+		if (!deviceName) return { message: 'NotFound', id: device.id };
+
+		if (device.creationTime !== undefined) throw new Error('Creation time cannot be updated');
+
+		const updateStatement: string = 'UPDATE devices SET ';
+		let values: string = '';
+		const sqlArgs = [];
+
+		if (device.name !== undefined) {
+			if (typeof device.name == 'string' && device.name.trim().length > 0) {
+				values += 'name=?,';
+				sqlArgs.push(device.name);
+			} else {
+				throw new Error('The device name is invalid');
+			}
+		}
+
+		if (device.brand !== undefined) {
+			if (typeof device.brand == 'string' && device.brand.trim().length > 0) {
+				values += 'brand=?,';
+				sqlArgs.push(device.brand);
+			} else {
+				throw new Error('The device brand is invalid');
+			}
+		}
+
+		if (device.state !== undefined) {
+			if (typeof device.state == 'string' && device.state.trim().length > 0) {
+				if (!DEVICE_STATES.includes(device.state)) {
+					throw new Error('The device state does not exist');
+				}
+				values += 'device_status_id=(SELECT id FROM device_status WHERE status_label = ?),'
+				sqlArgs.push(device.state);
+			} else {
+				throw new Error('The device state is invalid');
+			}
+		}
+
+		values = values.substring(0, values.length-1);
+		sqlArgs.push(device.id);
+
+		const [result] = await db.raw(
+			updateStatement + values + ' WHERE id=?',
+			sqlArgs
+		);
+
+		if (result.affectedRows == 0) throw new Error('No rows were affected');
+
+		const [[updatedDevice]] = await db.raw(
+			`SELECT * FROM
+				devices
+			WHERE id = ?`,
+			[device.id]
+		);
+
+		return updatedDevice;
 	}
 
 	/**
@@ -69,10 +156,6 @@ class DeviceService {
 	 * @async
 	 */
 	async getByState(deviceState: string) {
-		// const state = deviceState === DeviceState.AVAILABLE ? 
-					//   deviceState === DeviceState.INACTIVE ?
-
-
 		const [result] = await db.raw(
 			`SELECT * FROM
 				devices
@@ -90,7 +173,7 @@ class DeviceService {
 
 	/**
 	 * retrieve all devices
-	 * @returns 
+	 * @returns {Device[]}
 	 * @async
 	 */
 	async getAll() {
