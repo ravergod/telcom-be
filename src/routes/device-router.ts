@@ -343,8 +343,29 @@ deviceRouter.get('/get-all', async (req, res) => {
 
 /**
  * @openapi
- * /delete/{id}
+ * /delete/{id}:
  *   delete:
+ *     summary: Delete a device
+ *     description: Delete a device by it's id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: device's id
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Device deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: The device with id 1 was deleted
+ * 
  */
 deviceRouter.delete('/delete/:id', async (req, res) => {
 	const id: number = +req.params.id;

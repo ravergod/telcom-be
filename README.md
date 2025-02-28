@@ -31,9 +31,9 @@ This will get you all the packages necessary to run the application.
 2. **Environment variables:**
 
 Create a ```.env``` file to provide the necessary environment variables to execute the next steps.
-Fill them with your information.
+Fill them with your information. You can use the ```.env.example``` file to know which variables are required. 
 
-2. **Run your DB**:
+3. **Run your DB**:
 
 This could be done using the docker-compose from the root folder, or using the one inside of ./containers/mysql (would be a single container running)
 
@@ -49,7 +49,7 @@ docker-compose up
 
 Okay so now our DB should be running!
 
-3. **Run migrations and seeds:**
+4. **Run migrations and seeds:**
 
 Go to your root folder. After that:
 
@@ -60,7 +60,7 @@ knex migrations:latest && knex seed:run
 If you are a Windows user you should run one command at a time.
 Make sure they all worked.
 
-4. **Run the API:**
+5. **Run the API:**
 
 ```
 npm run dev
@@ -68,11 +68,11 @@ npm run dev
 
 If you see the message ```Server running at: localhost:4000``` then we are good to go.
 
-5. **Check the endpoints available:**
+6. **Check the endpoints available:**
 
 Now that our API is running you can check for the endpoints available at ```http://localhost:4000/api-docs```
 
-6. **Test the endpoints:**
+7. **Test the endpoints:**
 
 Use a tool of your choice (Postman, Insomnia) to hit the apis. You can also use the Swagger UI to see the api documentation and usage of endpoints.
 
